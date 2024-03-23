@@ -4,7 +4,7 @@ import userRoutes from "./userRoutes.js";
 
 const rootRoutes = express.Router()
 
-rootRoutes.use("/video", videoRoutes)
-rootRoutes.use("/user", userRoutes)
+rootRoutes.use("/videos", videoRoutes) 
+rootRoutes.use("/users", userRoutes)
 
 export default rootRoutes

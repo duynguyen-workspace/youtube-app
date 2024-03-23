@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { Box, CardMedia } from "@mui/material";
 
 import { Videos, ChannelCard } from ".";
-import { loginAPI } from "../utils/fetchFromAPI";
+import { loginAPI, loginFacebookAPI } from "../utils/fetchFromAPI";
+import ReactFacebookLogin from "react-facebook-login";
 
 const Login = () => {
     const [channelDetail, setChannelDetail] = useState();
@@ -36,7 +37,11 @@ const Login = () => {
                         <label htmlFor="inputEmail4" className="form-label">
                             Password
                         </label>
-                        <input className="form-control" id="pass" onChange={(e) => setPassword(e.target.value)}/>
+                        <input
+                            className="form-control"
+                            id="pass"
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
                     </div>
                     <div className="col-12">
                         <button
@@ -50,8 +55,14 @@ const Login = () => {
 
                                 loginAPI(info)
                                     .then((result) => {
-                                        // console.log(result);
+                                        console.log(result);
+
+                                        // Set local storage
+                                        localStorage.setItem("LOGIN_USER", result.data)
+
                                         alert("Login successfully");
+
+                                        window.location.reload()
                                     })
                                     .catch((err) => {
                                         // console.log(err);
@@ -61,6 +72,33 @@ const Login = () => {
                         >
                             Login
                         </button>
+                    </div>
+                    <div className="">
+                        <ReactFacebookLogin
+                            appId="1388206275144645"
+                            callback={(res) => {
+                                let { name, id } = res
+
+                                let info = {
+                                    fullName: name,
+                                    id
+                                }
+
+                                loginFacebookAPI(info).then((result) => {
+                                    console.log(result)
+
+                                    // Set local storage
+                                    localStorage.setItem("LOGIN_USER", result.data)
+
+                                    alert(result.message)
+                                }).catch(err => {
+                                    alert(err?.response?.data?.message)
+                                })
+
+                                // console.log("response: ", res)
+
+                            }}
+                        />
                     </div>
                 </form>
             </div>

@@ -3,6 +3,7 @@ import sequelize from "../models/connect.js"
 import initModels from "../models/init-models.js"
 import { responseData } from "../config/responseData.js"
 import bcrypt from 'bcrypt'
+import { checkToken, createToken } from "../config/jwt.js"
 
 const model = initModels(sequelize)
 const Op = Sequelize.Op
@@ -35,7 +36,49 @@ const login = async (req, res) => {
         return
     }
 
-    responseData(res, "Login successfully!", 200, "")
+    let token = createToken({ userId: checkedUser.dataValues.user_id })
+    responseData(res, "Login successfully!", 200, token)
+}
+
+const loginFacebook = async (req, res) => {
+    let { fullName, id } = req.body
+
+    let checkedUser = await model.users.findOne({
+        where: {
+            face_app_id: id 
+        }
+    })
+
+    // Check user
+    if (checkedUser) {
+        //
+        let token = createToken({ userId: checkedUser.dataValues.user_id })
+
+        responseData(res, "Login successfully!", 200, token)
+        return
+    } 
+
+    // Create new user
+    let new_user = {
+        full_name: fullName,
+        email: "",
+        pass_word: "",
+        face_app_id: id,
+        role: "USER"
+    }
+
+    try {
+        //
+        await model.users.create(new_user)
+
+        //
+        let token = createToken({ userId: new_user.dataValues.user_id })
+
+        responseData(res, "Login successfully!", 201, token)
+
+    } catch(err) {
+        responseData(res, "Login error", 200, err)
+    }
 }
 
 const register = async (req, res) => {
@@ -54,10 +97,12 @@ const register = async (req, res) => {
     } 
     
     // Create new user
+    let encrypted_pw = bcrypt.hashSync(password, 10)
+
     let new_user = {
         full_name: fullName,
         email,
-        pass_word: bcrypt.hashSync(password, 10),
+        pass_word: encrypted_pw,
         role: "USER"
     }
 
@@ -66,4 +111,4 @@ const register = async (req, res) => {
     responseData(res, "Register successfully!", 201, new_user)
 }
 
-export {getUsers, login, register}
+export {getUsers, login, loginFacebook, register}

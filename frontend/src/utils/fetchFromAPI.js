@@ -9,7 +9,7 @@ const options = {
     headers: {
         'X-RapidAPI-Key': process.env.REACT_APP_RAPID_API_KEY,
         'X-RapidAPI-Host': 'youtube-v31.p.rapidapi.com',
-        // 'token': localStorage.getItem("LOGIN_USER")
+        'token': localStorage.getItem("LOGIN_USER")
     },
 };
 
@@ -21,43 +21,49 @@ export const fetchFromAPI = async (url) => {
 
 
 export const getVideoAPI = async () => {
-    const { data } = await axios.get(`${BASE_URL}/video/get-video`);
+    const { data } = await axios.get(`${BASE_URL}/videos/get-video`);
 
     return data;
 };
 
 export const getVideoByIdAPI = async (id) => {
-    const { data } = await axios.get(`${BASE_URL}/video/get-video-by-id/${id}`);
+    const { data } = await axios.get(`${BASE_URL}/videos/get-video-by-id/${id}`, options);
 
     return data;
 };
 
 export const getVideoTypeAPI = async () => {
-    const { data } = await axios.get(`${BASE_URL}/video/get-video-type`);
+    const { data } = await axios.get(`${BASE_URL}/videos/get-video-type`);
 
     return data;
 };
 
 export const getVideoByTypeAPI = async (typeId) => {
-    const { data } = await axios.get(`${BASE_URL}/video/get-video-by-type/${typeId}`);
+    const { data } = await axios.get(`${BASE_URL}/videos/get-video-by-type/${typeId}`);
 
     return data;
 };
 
 export const searchVideoAPI = async (searchTerm) => {
-    const { data } = await axios.get(`${BASE_URL}/video/get-video-by-name/${searchTerm}`);
+    const { data } = await axios.get(`${BASE_URL}/videos/get-video-by-name/${searchTerm}`);
 
     return data;
 };
 
 export const loginAPI = async (info) => {
-    const { data } = await axios.post(`${BASE_URL}/user/login`, info);
+    const { data } = await axios.post(`${BASE_URL}/users/login`, info);
+
+    return data;
+};
+
+export const loginFacebookAPI = async (info) => {
+    const { data } = await axios.post(`${BASE_URL}/users/login-facebook`, info);
 
     return data;
 };
 
 export const registerAPI = async (info) => {
-    const { data } = await axios.post(`${BASE_URL}/user/register`, info);
+    const { data } = await axios.post(`${BASE_URL}/users/register`, info);
 
     return data;
 };
