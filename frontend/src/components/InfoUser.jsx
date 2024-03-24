@@ -6,6 +6,7 @@ import { Videos, ChannelCard } from ".";
 
 import ReactPlayer from "react-player";
 import { DOMAIN_BE_IMG } from "../utils/constants";
+import { uploadCloudAPI } from "../utils/fetchFromAPI";
 
 const InfoUser = () => {
   const [channelDetail, setChannelDetail] = useState();
@@ -35,7 +36,17 @@ const InfoUser = () => {
           <div className="col-2">
             <img className="rounded-circle" src={avatar} width="100%" />
 
-            <input className="form-control" type="file" id="formFile" />
+            <input className="form-control" type="file" id="formFile" onChange={() => {
+              let file = document.querySelector("#formFile").files[0]
+
+              let formData = new FormData()
+              formData.append("file", file)
+              formData.append("upload_preset", "vgdx9vk4")
+
+              uploadCloudAPI(formData).then(result => {
+                console.log(result)
+              }).catch(err => console.log(err))
+            }} />
 
           </div>
           <div className=" col-10">

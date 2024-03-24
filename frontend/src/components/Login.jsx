@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Box, CardMedia } from "@mui/material";
 
 import { Videos, ChannelCard } from ".";
 import { loginAPI, loginFacebookAPI } from "../utils/fetchFromAPI";
 import ReactFacebookLogin from "react-facebook-login";
-
 const Login = () => {
     const [channelDetail, setChannelDetail] = useState();
     const [videos, setVideos] = useState(null);
@@ -44,6 +43,9 @@ const Login = () => {
                         />
                     </div>
                     <div className="col-12">
+                        <Link to={"/forget-password"} className="d-block text-primary">
+                            Forget Password
+                        </Link>
                         <button
                             type="button"
                             className="btn btn-primary"

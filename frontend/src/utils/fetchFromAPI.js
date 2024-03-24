@@ -13,6 +13,30 @@ const options = {
     },
 };
 
+//! REFRESH TOKEN
+axios.interceptors.response.use((response) => {
+    console.log(response)
+    return response
+}, (error) => {
+    console.log(error.response)
+
+    if (error.response.data === "TokenExpiredError") {
+        // reset token api
+        resetTokenAPI().then(result => {
+            localStorage.setItem("LOGIN_USER", result)
+        }).catch(err => {
+            localStorage.removeItem("LOGIN_USER")
+        }).finally(() => {
+            window.location.reload()
+        })
+    } else if (error.response.status === "401") {
+        // remove current token
+        localStorage.removeItem("LOGIN_USER")
+    }
+
+    return Promise.reject(error);
+})
+
 export const fetchFromAPI = async (url) => {
     const { data } = await axios.get(`${BASE_URL}/${url}`, options);
 
@@ -67,3 +91,40 @@ export const registerAPI = async (info) => {
 
     return data;
 };
+
+export const getVideoCommentsAPI = async (id) => {
+    const { data } = await axios.get(`${BASE_URL}/videos/get-video-comments/${id}`, options);
+
+    return data;
+};
+
+export const commentAPI = async (info) => {
+    const { data } = await axios.post(`${BASE_URL}/videos/create-video-comment`, info, options);
+
+    return data;
+};
+
+export const resetTokenAPI = async () => {
+    const { data } = await axios.post(`${BASE_URL}/users/reset-token`, null, options);
+
+    return data;
+};
+
+export const checkEmailAPI = async (info) => {
+    const { data } = await axios.post(`${BASE_URL}/users/check-email`, info, options);
+
+    return data;
+};
+
+export const checkCodeAPI = async (info) => {
+    const { data } = await axios.post(`${BASE_URL}/users/check-code`, info, options);
+
+    return data;
+};
+
+export const uploadCloudAPI = async (formData) => {
+    const { data } = await axios.post(`https://api.cloudinary.com/v1_1/dhwmroe6u/upload`, formData);
+
+    return data;
+
+}

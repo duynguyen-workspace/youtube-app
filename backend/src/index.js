@@ -2,11 +2,15 @@ import express from 'express'
 import cors from 'cors'
 import rootRoutes from './routes/rootRoutes.js'
 
-// khởi tạo app express
+// Initialise Express App
 const app = express()
 
-// middleware cấu hình lại body thành json
+//TODO: MIDDLEWARE
+// Configuring app to use json
 app.use(express.json())
+
+// Positioning original directory path
+app.use(express.static("."))
 
 // 
 app.use(cors())

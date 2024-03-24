@@ -21,8 +21,23 @@ const decodeToken = (token) => {
     return jwt.decode(token);
 }
 
+//* refresh token
+const createRefToken = (data) => {
+    let token = jwt.sign(data, "YOUTUBE_SECRET_REFRESH", { // Secret Key: YOUTUBE_SECRET
+        algorithm: "HS256",
+        expiresIn: "1m" 
+    })
+    return token
+}
+
+const checkRefToken = (token) => {
+    return jwt.verify(token, "YOUTUBE_SECRET_REFRESH", error => error);
+}
+
 export {
     createToken,
     checkToken,
-    decodeToken
+    decodeToken,
+    createRefToken,
+    checkRefToken
 }
