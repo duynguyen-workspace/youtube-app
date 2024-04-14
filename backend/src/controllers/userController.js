@@ -3,10 +3,12 @@ import sequelize from "../models/connect.js"
 import initModels from "../models/init-models.js"
 import { responseData } from "../config/responseData.js"
 import bcrypt from 'bcrypt'
-import { checkToken, createRefToken, createToken } from "../config/jwt.js"
+import { checkToken, createRefToken, createToken, decodeToken } from "../config/jwt.js"
 import nodemailer from 'nodemailer'
 import { generateRandomCode } from "../utils/index.js"
 import sendMail from "../config/sendMail.js"
+import fs from 'fs'
+import compress_images from 'compress-images'
 
 const model = initModels(sequelize)
 const Op = Sequelize.Op
@@ -41,12 +43,14 @@ const login = async (req, res) => {
 
     let token = createToken({ 
         userId: checkedUser.dataValues.user_id,
+        fullName: checkedUser.dataValues.full_name,
         key: new Date().getTime()
     })
 
     // Create refresh token
     let refreshToken = createRefToken({ 
         userId: checkedUser.dataValues.user_id,
+        fullName: checkedUser.dataValues.full_name,
         key: new Date().getTime()
     });
     checkedUser.dataValues.refresh_token = refreshToken;
@@ -80,25 +84,29 @@ const loginFacebook = async (req, res) => {
     } 
 
     // Create new user
-    let new_user = {
+    let newUser = {
         full_name: fullName,
+        age: null,
         email: "",
-        pass_word: "",
+        user_password: "",
         face_app_id: id,
-        role: "USER"
     }
 
     try {
         //
-        await model.users.create(new_user)
+        await prisma.users.create(newUser)
 
         //
-        let token = createToken({ userId: new_user.dataValues.user_id })
+        let token = createToken({ 
+            userId: newUser.dataValues.user_id,
+            fullName: newUser.dataValues.full_name,
+            key: new Date().getTime()
+        })
 
         responseData(res, "Login successfully!", 201, token)
 
     } catch(err) {
-        responseData(res, "Login error", 200, err)
+        responseData(res, "Login error", 400, err)
     }
 }
 
@@ -232,5 +240,45 @@ const changePassword = (req, res) => {
     
 }
 
+const updateUser = (req, res) => {
+    
+}
 
-export {getUsers, login, loginFacebook, register, recoverEmail, checkEmail, checkCode, changePassword}
+const uploadAvatar = async (req, res) => {
+    const file = req.file;
+
+    const { token } = req.headers;
+    const { userId } = decodeToken(token)
+
+    let checkedUser = await model.users.findByPk(userId)
+    checkedUser.avatar = file.filename
+
+    await model.users.update(checkedUser.dataValues, {
+        where: {
+            user_id: userId
+        }
+    })
+
+    //* Optimize image size (compress image)
+    compress_images(
+        process.cwd() + "/public/img/" + file.fileName, 
+        process.cwd() + "/public/files/", 
+        { compress_force: false, statistic: true, autoupdate: true }, false,
+        { jpg: { engine: "mozjpeg", command: ["-quality", "25"] } },
+        { png: { engine: "pngquant", command: ["--quality=20-50", "-o"] } },
+        { svg: { engine: "svgo", command: "--multipass" } },
+        { gif: { engine: "gifsicle", command: ["--colors", "64", "--use-col=web"] } },
+        (error, completed, statistic) => {
+        console.log("-------------");
+        console.log(error);
+        console.log(completed);
+        console.log(statistic);
+        console.log("-------------");
+        }
+    );
+
+    responseData(res, "Upload successfully", 200, checkedUser.dataValues.avatar)
+}
+
+
+export {getUsers, login, loginFacebook, register, recoverEmail, checkEmail, checkCode, changePassword, uploadAvatar}

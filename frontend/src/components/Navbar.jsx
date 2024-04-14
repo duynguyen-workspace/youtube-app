@@ -1,13 +1,14 @@
 import { Avatar, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 import { logo } from "../utils/constants";
 import { ChannelCard, SearchBar } from "./";
 
-
 const Navbar = () => {
 
   let userLogin = localStorage.getItem("LOGIN_USER")
+  let user = userLogin ? jwtDecode(userLogin) : undefined
 
   return (
     <Stack direction="row" alignItems="center" p={2} sx={{ background: '#000', top: 0, justifyContent: "space-between" }}>
@@ -24,8 +25,10 @@ const Navbar = () => {
         </div>
 
         <div className="dropdown" hidden={userLogin ? false : true}>
-
-          <Avatar type="button" data-bs-toggle="dropdown" aria-expanded="false" />
+          
+            <Avatar type="button" data-bs-toggle="dropdown" aria-expanded="false" />
+            {user && <h5 className="text-white">{user.fullName}</h5>}
+          
           <ul className="dropdown-menu">
             <Link to={"channel/1"} >
               <li><a className="dropdown-item" href="#" >Kênh cá nhân</a></li>

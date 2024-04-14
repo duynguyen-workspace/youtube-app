@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export const BASE_URL = 'http://localhost:8080';
+export const BASE_URL_IMAGE = `${BASE_URL}/public/img/`
 
 const options = {
     params: {
@@ -128,3 +129,15 @@ export const uploadCloudAPI = async (formData) => {
     return data;
 
 }
+
+export const uploadAvatarAPI = async (formData) => {
+    const { data } = await axios.put(`${BASE_URL}/users/upload-avatar`, formData, options);
+
+    return data;
+};
+
+export const getUsersAPI = async () => {
+    const { data } = await axios.get(`${BASE_URL}/users/get-users`);
+
+    return data;
+};

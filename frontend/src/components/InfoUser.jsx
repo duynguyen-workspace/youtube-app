@@ -6,7 +6,7 @@ import { Videos, ChannelCard } from ".";
 
 import ReactPlayer from "react-player";
 import { DOMAIN_BE_IMG } from "../utils/constants";
-import { uploadCloudAPI } from "../utils/fetchFromAPI";
+import { BASE_URL_IMAGE, uploadAvatarAPI, uploadCloudAPI } from "../utils/fetchFromAPI";
 
 const InfoUser = () => {
   const [channelDetail, setChannelDetail] = useState();
@@ -34,18 +34,25 @@ const InfoUser = () => {
       <div className="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabIndex={0}>
         <div className="row">
           <div className="col-2">
-            <img className="rounded-circle" src={avatar} width="100%" />
+            <img className="rounded-circle" src={`${BASE_URL_IMAGE}${avatar}`} width="100%" />
 
             <input className="form-control" type="file" id="formFile" onChange={() => {
               let file = document.querySelector("#formFile").files[0]
 
-              let formData = new FormData()
-              formData.append("file", file)
-              formData.append("upload_preset", "vgdx9vk4")
+              // let formData = new FormData()
+              // formData.append("file", file)
+              // formData.append("upload_preset", "vgdx9vk4")
 
-              uploadCloudAPI(formData).then(result => {
-                console.log(result)
-              }).catch(err => console.log(err))
+              // uploadCloudAPI(formData).then(result => {
+              //   console.log(result)
+              // }).catch(err => console.log(err))
+
+              let formData = new FormData()
+              formData.append("avatar", file)
+
+              uploadAvatarAPI(formData).then(result => {
+                setAvatar(result.data)
+              }).catch()
             }} />
 
           </div>

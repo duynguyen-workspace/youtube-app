@@ -1,5 +1,6 @@
 import _sequelize from "sequelize";
 const DataTypes = _sequelize.DataTypes;
+import _chat from  "./chat.js";
 import _code from  "./code.js";
 import _users from  "./users.js";
 import _video from  "./video.js";
@@ -8,6 +9,7 @@ import _video_like from  "./video_like.js";
 import _video_type from  "./video_type.js";
 
 export default function initModels(sequelize) {
+  const chat = _chat.init(sequelize, DataTypes);
   const code = _code.init(sequelize, DataTypes);
   const users = _users.init(sequelize, DataTypes);
   const video = _video.init(sequelize, DataTypes);
@@ -29,6 +31,7 @@ export default function initModels(sequelize) {
   video_type.hasMany(video, { as: "videos", foreignKey: "type_id"});
 
   return {
+    chat,
     code,
     users,
     video,
