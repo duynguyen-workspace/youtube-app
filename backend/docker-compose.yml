@@ -1,0 +1,38 @@
+version: '3'
+
+volumes:
+  mysql_db:
+    driver: local
+
+networks:
+  youtube-nw:
+
+services:
+  mysql_db:
+    image: mysql 
+    container_name: mysql_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_db:/var/lib/mysql
+    networks:
+      - youtube-nw
+  be:
+    depends_on:
+      - mysql_db
+    build: . 
+    container_name: youtube-app
+    env_file: .env
+    ports:
+      - 8080:8080
+    networks:
+      - youtube-nw
+  fe:
+    build: ../frontend/build
+    container_name: fe
+    ports:
+      - 3020:80
+    networks:
+      - youtube-nw
