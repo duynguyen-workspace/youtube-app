@@ -8,18 +8,18 @@ const options = {
         maxResults: 50,
     },
     headers: {
-        'X-RapidAPI-Key': process.env.REACT_APP_RAPID_API_KEY,
-        'X-RapidAPI-Host': 'youtube-v31.p.rapidapi.com',
+        // 'X-RapidAPI-Key': process.env.REACT_APP_RAPID_API_KEY,
+        // 'X-RapidAPI-Host': 'youtube-v31.p.rapidapi.com',
         'token': localStorage.getItem("LOGIN_USER")
     },
 };
 
 //! REFRESH TOKEN
 axios.interceptors.response.use((response) => {
-    console.log(response)
+    // console.log(response)
     return response
 }, (error) => {
-    console.log(error.response)
+    // console.log(error.response)
 
     if (error.response.data === "TokenExpiredError") {
         // reset token api
